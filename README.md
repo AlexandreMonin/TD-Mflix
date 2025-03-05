@@ -84,7 +84,7 @@ db["movies"].find( { "imdb.rating": { $gt: 9 } }, { title: 1, genres: 1, _id: 0 
 
 12. Contenu avec au moins 4 acteurs :
 ```
-db["movies"].find({ cast: { $size: 4 } }).count()
+db["movies"].find(type: "movie", { cast: { $size: 4 } }).count()
 
-//output: 22389
+//output: 22182
 ```
