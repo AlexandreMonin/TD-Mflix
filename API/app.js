@@ -178,13 +178,114 @@ app.get("/IMDBMovies", async (req, res) => {
   }
 });
 
-app.get("/Cast", async (req, res) => {
+app.get("/4Cast", async (req, res) => {
   try {
     const movies = await Movie.find({ type: "movie" })
       .where("cast")
       .size(4)
       .countDocuments();
-    res.status(200).json(movies );
+    res.status(200).json(movies);
+  } catch (error) {
+    res.status(500).json({ error: "Error getting movies" });
+  }
+});
+
+app.get("/Stats", async (req, res) => {
+  try {
+    const count = await Movie.find().countDocuments();
+    const totalAwards = await Movie.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalAwards: { $sum: "$awards.wins" },
+        },
+      },
+    ]);
+    const averageNomination = await Movie.aggregate([
+      {
+        $match: { type: "movie" },
+      },
+      {
+        $group: {
+          _id: null,
+          averageNomination: { $avg: "$awards.nominations" },
+        },
+      },
+    ]);
+    const averageAwards = await Movie.aggregate([
+      {
+        $match: { type: "movie" },
+      },
+      {
+        $group: {
+          _id: null,
+          averageAwards: { $avg: "$awards.wins" },
+        },
+      },
+    ]);
+    res.status(200).json({
+      count,
+      totalAwards: totalAwards[0].totalAwards,
+      averageNomination:
+        Math.round(averageNomination[0].averageNomination * 100) / 100,
+      averageAwards: Math.round(averageAwards[0].averageAwards * 100) / 100,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Error getting movies" });
+  }
+});
+
+app.get("/TotalCast", async (req, res) => {
+  try {
+    const movieCast = await Movie.aggregate([
+      {
+        $match: { type: "movie" },
+      },
+      {
+        $unwind: "$cast",
+      },
+      {
+        $group: {
+          _id: null,
+          movieCast: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const serieCast = await Movie.aggregate([
+      {
+        $match: { type: "series" },
+      },
+      {
+        $unwind: "$cast",
+      },
+      {
+        $group: {
+          _id: null,
+          serieCast: { $sum: 1 },
+        },
+      },
+    ]);
+
+    res
+      .status(200)
+      .json({
+        movieCast: movieCast[0].movieCast,
+        serieCast: serieCast[0].serieCast,
+      });
+  } catch (error) {
+    res.status(500).json({ error: "Error getting movies" });
+  }
+});
+
+app.get("/MoviesWinners", async (req, res) => {
+  try {
+    const movies = await Movie.find({
+      released: { $gte: new Date("2000-01-01"), $lte: new Date("2010-12-31") },
+      "imdb.rating": { $gt: 8 },
+      "awards.wins": { $gt: 10 },
+    });
+    res.status(200).json(movies);
   } catch (error) {
     res.status(500).json({ error: "Error getting movies" });
   }
