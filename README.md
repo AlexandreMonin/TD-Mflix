@@ -48,12 +48,14 @@ db["movies"].distinct("genres")
 5. Les films depuis 2015 par ordre décroissant
 ```
 db["movies"].find({type : "movie", released : {$gte: ISODate("2015-01-01T00:00:00Z")}}).sort({released: -1})
-
 ```
 
 6. Les films depuis 2015, avec au moins 5 prix par ordre décroissant
 ```
 db["movies"].find({type : "movie", released : {$gte: ISODate("2015-01-01T00:00:00Z")}, "awards.wins" : {$gte: 5}}).sort({released: -1})
+```
 
-
+7. Les films depuis 2015, avec au moins 5 prix par ordre décroissant et en francais
+```
+db["movies"].find({type : "movie", released : {$gte: ISODate("2015-01-01T00:00:00Z")}, "awards.wins" : {$gte: 5}, languages : "French"}).sort({released: -1})
 ```
