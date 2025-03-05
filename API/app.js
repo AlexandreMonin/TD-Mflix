@@ -267,12 +267,10 @@ app.get("/TotalCast", async (req, res) => {
       },
     ]);
 
-    res
-      .status(200)
-      .json({
-        movieCast: movieCast[0].movieCast,
-        serieCast: serieCast[0].serieCast,
-      });
+    res.status(200).json({
+      movieCast: movieCast[0].movieCast,
+      serieCast: serieCast[0].serieCast,
+    });
   } catch (error) {
     res.status(500).json({ error: "Error getting movies" });
   }
@@ -286,6 +284,44 @@ app.get("/MoviesWinners", async (req, res) => {
       "awards.wins": { $gt: 10 },
     });
     res.status(200).json(movies);
+  } catch (error) {
+    res.status(500).json({ error: "Error getting movies" });
+  }
+});
+
+app.get("/Hollywood", async (req, res) => {
+  try {
+    const hollywoodCount = await Movie.aggregate([
+      {
+        $match: { fullplot: { $exists: true, $ne: "" } },
+      },
+      {
+        $project: {
+          fullplot: 1,
+          hollywoodOccurrences: {
+            $size: {
+              $filter: {
+                input: { $split: ["$fullplot", "Hollywood"] },
+                as: "word",
+                cond: { $ne: ["$$word", ""] },
+              },
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalHollywoodCount: { $sum: "$hollywoodOccurrences" },
+        },
+      },
+    ]);
+
+    res
+      .status(200)
+      .json({
+        totalHollywoodCount: hollywoodCount[0].totalHollywoodCount,
+      });
   } catch (error) {
     res.status(500).json({ error: "Error getting movies" });
   }
