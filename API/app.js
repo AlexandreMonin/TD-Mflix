@@ -10,7 +10,7 @@ const port = 3000;
 app.use(express.json());
 
 mongoose
-  .connect("mongodb://root:root@localhost:27018/mflix?authSource=admin")
+  .connect("mongodb://root:root@db/mflix?authSource=admin")
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Failed to connect to MongoDB", err));
 
