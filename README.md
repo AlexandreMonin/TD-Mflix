@@ -20,3 +20,10 @@ db["movies"].find({"type" : "series"}).count()
 
 // output: 254
 ```
+
+3. Les différents types de contenus
+```
+db["movies"].distinct("type")
+
+// output: [ 'movie', 'series' ] 
+```
