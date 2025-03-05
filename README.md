@@ -88,3 +88,7 @@ db["movies"].find(type: "movie", { cast: { $size: 4 } }).count()
 
 //output: 22182
 ```
+
+17.
+Quels sont les films sortis après l’an 2000, classés par note IMDb décroissante, ayant remporté plus de 5 récompenses ?
+réponse sur la route "/17"

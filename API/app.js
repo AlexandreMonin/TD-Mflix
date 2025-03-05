@@ -327,6 +327,21 @@ app.get("/Hollywood", async (req, res) => {
   }
 });
 
+app.get("/17", async (req, res) => {
+    try {
+      const movies = await Movie.find({
+        released: { $gte: new Date("2000-01-01") },
+        "awards.wins": { $gt: 5 }
+      })
+        .sort({ "imdb.rating": -1 })
+  
+      res.status(200).json(movies);
+    } catch (error) {
+      res.status(500).json({ error: "Error getting movies" });
+    }
+  });
+  
+
 app.listen(port, () => {
   console.log(`DB app listening on port ${port}`);
 });
