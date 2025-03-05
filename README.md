@@ -59,3 +59,32 @@ db["movies"].find({type : "movie", released : {$gte: ISODate("2015-01-01T00:00:0
 ```
 db["movies"].find({type : "movie", released : {$gte: ISODate("2015-01-01T00:00:00Z")}, "awards.wins" : {$gte: 5}, languages : "French"}).sort({released: -1})
 ```
+
+8. Les films Thriller et Drama
+```
+db["movies"].find({type : "movie", genres: {$all: ["Thriller", "Drama"]}}).count()
+
+// output: 1234
+```
+
+9. Les films Thriller ou Crime (Titre et genre)
+```
+db["movies"].find({ genres: { $in: ["Crime", "Thriller"] } }, { title: 1, genres: 1, _id: 0 })
+```
+
+10. Les films Francais et Italien (Titre et langue)
+```
+db["movies"].find({ genres: { $in: ["Crime", "Thriller"] } }, { title: 1, genres: 1, _id: 0 })
+```
+
+11. Les films IMDB > 9 (Titre et genre)
+```
+db["movies"].find( { "imdb.rating": { $gt: 9 } }, { title: 1, genres: 1, _id: 0 })
+```
+
+12. Contenu avec au moins 4 acteurs :
+```
+db["movies"].find({ cast: { $size: 4 } }).count()
+
+//output: 22389
+```
